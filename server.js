@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
 import Workspace from "./models/Workspace.js";
-import slackRoutes from "./src/routes/slack.routes.js";
+import slackRoutes from "./src/routes/routes.js";
 import { connectDB } from "./src/config/db.js"; // ✅ importa la conexión de MongoClient
 
 dotenv.config();
