@@ -2,12 +2,13 @@
 import express from "express";
 import session from "express-session";
 import passport from "passport";
-import { Strategy as SlackStrategy } from "passport-slack-oauth2"; // ✅ Import corregido
+import { Strategy as SlackStrategy } from "passport-slack-oauth2";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
 import Workspace from "./models/Workspace.js";
-import slackRoutes from "./src/routes/routes.js"; // ✅ importa tus rutas
+import slackRoutes from "./src/routes/slack.routes.js";
+import { connectDB } from "./src/config/db.js"; // ✅ importa la conexión de MongoClient
 
 dotenv.config();
 
@@ -52,7 +53,7 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        // Buscar o crear workspace en MongoDB
+        // Buscar o crear workspace en MongoDB (Mongoose)
         let workspace = await Workspace.findOne({ slackId: profile.team.id });
         if (!workspace) {
           workspace = new Workspace({
@@ -72,23 +73,29 @@ passport.use(
 
 // Rutas de autenticación
 app.get("/auth/slack", passport.authenticate("slack"));
-
 app.get(
   "/auth/slack/callback",
   passport.authenticate("slack", { failureRedirect: "/" }),
-  (req, res) => {
-    // Login exitoso
-    res.redirect("/dashboard");
-  }
+  (req, res) => res.redirect("/dashboard")
 );
 
 // Conexión a MongoDB y arranque del servidor
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log("✅ Conectado a MongoDB");
+const startServer = async () => {
+  try {
+    // ✅ Conectar Mongoose
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log("✅ Conectado a MongoDB con Mongoose");
+
+    // ✅ Conectar cliente nativo usado por getDB()
+    await connectDB();
+    console.log("✅ Cliente MongoDB inicializado");
+
     app.listen(process.env.PORT || 3000, () => {
       console.log(`🚀 Servidor corriendo en puerto ${process.env.PORT || 3000}`);
     });
-  })
-  .catch((err) => console.error("❌ Error conectando a MongoDB:", err));
+  } catch (error) {
+    console.error("❌ Error al iniciar el servidor:", error);
+  }
+};
+
+startServer();
