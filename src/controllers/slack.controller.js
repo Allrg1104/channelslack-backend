@@ -8,6 +8,7 @@ export const slackInstall = (req, res) => {
     redirect_uri: process.env.SLACK_OAUTH_REDIRECT_URI,
   });
   res.redirect(`https://slack.com/oauth/v2/authorize?${params.toString()}`);
+
 };
 
 export const slackOAuthRedirect = async (req, res) => {
@@ -46,7 +47,9 @@ export const slackOAuthRedirect = async (req, res) => {
 
     res.redirect(`${process.env.APP_BASE_URL}/installed?team=${data.team.name}`);
   } catch (error) {
-    console.error(error.response?.data || error.message);
+    // 🔥 Aquí el nuevo log para ver la causa real
+    console.error("🔴 ERROR DETALLADO DE SLACK:", error.response?.data || error.message);
+
     res.status(500).json({ error: "Error en OAuth Slack" });
   }
 };
