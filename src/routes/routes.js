@@ -5,7 +5,7 @@ import { createSlackChannel } from "../controllers/channel.controller.js";
 
 const router = express.Router();
 
-router.get("/install", slackInstall);                //para definir
+router.get("/installed", slackInstall);                //para definir
 router.get("/oauth_redirect", slackOAuthRedirect);   //para definir
 router.post("/create", createSlackChannel);          //para definir
 
