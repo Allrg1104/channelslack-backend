@@ -58,6 +58,14 @@ export const slackOAuthRedirect = async (req, res) => {
     );
 
     console.log(`✅ Instalación registrada para ${data.team.name}`);
+    
+    // 🔹 Redirigir al frontend
+    res.redirect(`https://channelslack-frontend.vercel.app/installed?team=${encodeURIComponent(data.team.name)}`);
+  } catch (error) {
+    console.error("🔴 ERROR DETALLADO DE SLACK:", error.response?.data || error.message);
+    res.status(500).json({ error: "Error en OAuth Slack" });
+  }
+};
 
     // 🔹 Crear canal automáticamente
     try {
@@ -79,12 +87,4 @@ export const slackOAuthRedirect = async (req, res) => {
       }
     } catch (err) {
       console.error("❌ Error creando canal en Slack:", err.response?.data || err.message);
-    }
-
-    // 🔹 Redirigir al frontend
-    res.redirect(`https://channelslack-frontend.vercel.app/installed?team=${encodeURIComponent(data.team.name)}`);
-  } catch (error) {
-    console.error("🔴 ERROR DETALLADO DE SLACK:", error.response?.data || error.message);
-    res.status(500).json({ error: "Error en OAuth Slack" });
-  }
-};
+    };
