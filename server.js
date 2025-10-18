@@ -5,15 +5,24 @@ import passport from "passport";
 import { Strategy as SlackStrategy } from "passport-slack-oauth2"; // ✅ Import corregido
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import cors from "cors";
 import Workspace from "./models/Workspace.js";
+import slackRoutes from "./src/routes/routes.js"; // ✅ importa tus rutas
 
 dotenv.config();
 
 const app = express();
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Ruta de prueba
+app.get("/", (req, res) => res.send("✅ ChannelSlack backend activo"));
+
+// ✅ monta el router exactamente en /api-rest/slack
+app.use("/api-rest/slack", slackRoutes);
 
 // Configuración de sesiones
 app.use(
